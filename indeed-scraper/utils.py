@@ -1,8 +1,9 @@
-from constants import INDEED_LINKS
 import os
+import pandas as pd
 from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -44,15 +45,14 @@ def scrap_indeed_jobs_data(soup):
             pass
     return jobs_data
 
-def indeed_scrap():
-    jobs_data = []
-
-    for link in INDEED_LINKS[:1]:
-        jobs_num,job_data = indeed_jobs_num(link)
-        for page in tqdm.tqdm(range(1,int(jobs_num)//15)):
-            soup = BeautifulSoup(scrapfly_request(link+f'&start={10*page}'),features="lxml")
-            job_data.extend(scrap_indeed_jobs_data(soup))
-        jobs_data.extend(job_data)
+def indeed_scrap(indeed_link):
+    if not os.path.exists("output/indeed"):
+        os.makedirs("output/indeed")
+    jobs_num,job_data = indeed_jobs_num(indeed_link['links'])
+    for page in tqdm.tqdm(range(1,int(jobs_num)//15)):
+        soup = BeautifulSoup(scrapfly_request(indeed_link['links']+f'&start={10*page}'),features="lxml")
+        job_data.extend(scrap_indeed_jobs_data(soup))
     
-    return jobs_data
+    df = pd.DataFrame(job_data)
+    df.to_csv(f'output/indeed/indeed_output_{indeed_link["locations"]}.csv')
 
