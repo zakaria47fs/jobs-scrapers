@@ -1,5 +1,5 @@
-from constants import LINKEDIN_LINKS
 import os
+import pandas as pd
 from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
@@ -65,14 +65,13 @@ def scrap_linkedin_api(link,page_num):
     
     return result.content
 
-def linkedin_scrap():
-    jobs_data = []
-
-    for link in LINKEDIN_LINKS[:1]:
-        jobs_num,job_data = linkedin_jobs_num(link)
-        for page in tqdm.tqdm(range(1,1+(int(jobs_num)//25))):
-            soup = BeautifulSoup(scrap_linkedin_api(link,page),features="lxml")
-            job_data.extend(scrap_linkedin_jobs_data(soup))
-        jobs_data.extend(job_data)
+def linkedin_scrap(linkedin_link):
+    if not os.path.exists("output/linkedin"):
+        os.makedirs("output/linkedin")
+    jobs_num,job_data = linkedin_jobs_num(linkedin_link['links'])
+    for page in tqdm.tqdm(range(1,int(jobs_num)//25)):
+        soup = BeautifulSoup(scrapfly_request(linkedin_link['links'],page),features="lxml")
+        job_data.extend(scrap_linkedin_jobs_data(soup))
     
-    return jobs_data
+    df = pd.DataFrame(job_data)
+    df.to_csv(f'output/linkedin/linkedin_output_{linkedin_link["locations"]}.csv')
