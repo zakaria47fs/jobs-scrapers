@@ -1,4 +1,4 @@
-from google_jobs_scraper.utils import google_jobs_scrape
+from google_scraper.utils import google_jobs_scrape
 import pandas as pd
 
 if __name__=='__main__':
