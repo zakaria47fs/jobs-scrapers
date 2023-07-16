@@ -1,4 +1,4 @@
-from indeed_jobs_scraper.utils import indeed_scrap
+from indeed_scraper.utils import indeed_scrap
 import pandas as pd
 
 
