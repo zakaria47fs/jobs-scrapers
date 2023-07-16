@@ -1,4 +1,4 @@
-from linkedin_jobs_scraper.utils import linkedin_scrap
+from linkedin_scraper.utils import linkedin_scrap
 import pandas as pd
 
 
