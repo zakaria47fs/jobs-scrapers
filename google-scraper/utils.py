@@ -1,11 +1,14 @@
 from serpapi import GoogleSearch
 import os
+import pandas as pd
 from dotenv import load_dotenv
 load_dotenv()
 
 api_key = os.getenv("API_KEY")
 
 def google_jobs_scrape(search_query):
+    if not os.path.exists("output/google"):
+        os.makedirs("output/google")
     params = {
         "engine": "google_jobs",
         "q": search_query,
@@ -31,7 +34,8 @@ def google_jobs_scrape(search_query):
         job_data = {'job_title':job_title,'job_link':job_link,'company':company,'location':location,'date_posted':date_posted}
         jobs_data.append(job_data)
     
-    return jobs_data
+    df = pd.DataFrame(jobs_data)
+    df.to_csv(f'output/google/google_output_{search_query}.csv')
 
 def jobs_link_by_id(job_id):
     params = {
@@ -45,3 +49,7 @@ def jobs_link_by_id(job_id):
     apply_options = results["apply_options"]
     
     return apply_options[0]['link']
+
+    
+    
+    
