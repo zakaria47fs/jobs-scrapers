@@ -70,7 +70,7 @@ def linkedin_scrap(linkedin_link):
         os.makedirs("output/linkedin")
     jobs_num,job_data = linkedin_jobs_num(linkedin_link['links'])
     for page in tqdm.tqdm(range(1,int(jobs_num)//25)):
-        soup = BeautifulSoup(scrapfly_request(linkedin_link['links'],page),features="lxml")
+        soup = BeautifulSoup(scrap_linkedin_api(linkedin_link['links'],page),features="lxml")
         job_data.extend(scrap_linkedin_jobs_data(soup))
     
     df = pd.DataFrame(job_data)
