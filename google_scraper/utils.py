@@ -25,14 +25,17 @@ def google_jobs_scrape(search_query):
     
     jobs_data = []
     for job in jobs_results:
-        job_title = job['title']
-        job_id = job['job_id']
-        company = job['company_name']
-        location = job['location']
-        date_posted = job['detected_extensions']['posted_at']
-        job_link = jobs_link_by_id(job_id)
-        job_data = {'job_title':job_title,'job_link':job_link,'company':company,'location':location,'date_posted':date_posted}
-        jobs_data.append(job_data)
+        try:
+            job_title = job['title']
+            job_id = job['job_id']
+            company = job['company_name']
+            location = job['location']
+            date_posted = job['detected_extensions']['posted_at']
+            job_link = jobs_link_by_id(job_id)
+            job_data = {'job_title':job_title,'job_link':job_link,'company':company,'location':location,'date_posted':date_posted}
+            jobs_data.append(job_data)
+        except:
+            pass
     
     df = pd.DataFrame(jobs_data)
     df.to_csv(f'output/google/google_output_{search_query}.csv')
