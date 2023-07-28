@@ -10,5 +10,5 @@ if __name__=='__main__':
     for index in indeed_df.index:
         INDEED_LINKS.append({'links':indeed_df['links'][index],'locations':indeed_df['locations'][index]})
         
-    for indeed_link in INDEED_LINKS[:1]:
+    for indeed_link in INDEED_LINKS:
         indeed_scrap(indeed_link)
