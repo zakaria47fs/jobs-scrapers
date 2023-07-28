@@ -62,7 +62,8 @@ def scrap_linkedin_api(link,page_num):
     url = url,
     headers = headers,
     asp = True,
-    country  = "gb" ))
+    country  = "gb",
+    retry=True))
     
     return result.content
 
@@ -71,12 +72,10 @@ def linkedin_scrap(linkedin_link):
         os.makedirs("output/linkedin")
     jobs_num,job_data = linkedin_jobs_num(linkedin_link['links'])
     for page in tqdm.tqdm(range(1,jobs_num//25)):
-        for i in range(3):
-            try:
-                soup = BeautifulSoup(scrap_linkedin_api(linkedin_link['links'],page),features="lxml")
-                job_data.extend(scrap_linkedin_jobs_data(soup))
-            except:
-                break
-    
+        try:
+            soup = BeautifulSoup(scrap_linkedin_api(linkedin_link['links'],page),features="lxml")
+            job_data.extend(scrap_linkedin_jobs_data(soup))
+        except:
+            break
     df = pd.DataFrame(job_data)
     df.to_csv(f'output/linkedin/linkedin_output_{linkedin_link["locations"]}.csv')
