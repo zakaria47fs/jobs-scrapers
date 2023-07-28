@@ -44,7 +44,7 @@ def jobs_link_by_id(job_id):
     params = {
       "engine": "google_jobs_listing",
       "q": job_id,
-    "api_key": "c51098b756d316316682dd51e9ce95f2eb15ff587833db7516ad91e402ac7242"
+    "api_key": api_key
     }
 
     search = GoogleSearch(params)
