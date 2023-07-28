@@ -23,8 +23,8 @@ def scrapfly_request(link):
 def indeed_jobs_num(link):
     soup = BeautifulSoup(scrapfly_request(link),features="lxml")
     jobs_num = soup.find(class_="jobsearch-JobCountAndSortPane-jobCount css-1af0d6o eu4oa1w0").find('span').getText().replace('jobs','').strip()
-    jobs_data = scrap_indeed_jobs_data(soup)
     jobs_num = int(jobs_num.replace(',', ''))
+    jobs_data = scrap_indeed_jobs_data(soup)
     return jobs_num,jobs_data
 
 def scrap_indeed_jobs_data(soup):   
@@ -50,14 +50,13 @@ def indeed_scrap(indeed_link):
     if not os.path.exists("output/indeed"):
         os.makedirs("output/indeed")
     jobs_num,job_data = indeed_jobs_num(indeed_link['links'])
-    for page in tqdm.tqdm(range(1,jobs_num)//15):
-        for i in range(3):
-            try:
-                soup = BeautifulSoup(scrapfly_request(indeed_link['links']+f'&start={10*page}'),features="lxml")
-                job_data.extend(scrap_indeed_jobs_data(soup))
-                break
-            except:
-                pass
+    for page in tqdm.tqdm(range(1,jobs_num//15)):
+        try:
+            soup = BeautifulSoup(scrapfly_request(indeed_link['links']+f'&start={10*page}'),features="lxml")
+            job_data.extend(scrap_indeed_jobs_data(soup))
+        except:
+           break
     
     df = pd.DataFrame(job_data)
     df.to_csv(f'output/indeed/indeed_output_{indeed_link["locations"]}.csv')
+
