@@ -10,5 +10,5 @@ if __name__=='__main__':
     for index in linkedin_df.index:
         LINKEDIN_LINKS.append({'links':linkedin_df['links'][index],'locations':linkedin_df['locations'][index]})
         
-    for indeed_link in LINKEDIN_LINKS[:1]:
-        linkedin_scrap(indeed_link)
+    for linkedin_link in LINKEDIN_LINKS:
+        linkedin_scrap(linkedin_link)
