@@ -1,6 +1,6 @@
 from google_scraper.utils import google_jobs_scrape
 import pandas as pd
-
+from tqdm import tqdm
 if __name__=='__main__':
 
     PHRASES = []
@@ -9,7 +9,10 @@ if __name__=='__main__':
     for index in google_df.index:
         PHRASES.append(google_df['phrases'][index])
         
-    for phrase in PHRASES[:1]:
-        google_jobs_scrape(phrase)
-
+    for phrase in tqdm(PHRASES):
+        for i in range(3):
+            try:
+                google_jobs_scrape(phrase)
+            except:
+                pass
     
