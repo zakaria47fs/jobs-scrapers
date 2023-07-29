@@ -22,8 +22,10 @@ def scrapfly_request(link):
 
 def linkedin_jobs_num(link):
     soup = BeautifulSoup(scrapfly_request(link),features="lxml")
-    jobs_num = soup.find(class_="results-context-header__job-count").getText().replace('+','').replace(',','')
-    jobs_num = int(jobs_num.replace(',', ''))
+    try:
+        jobs_num = int(soup.find(class_="results-context-header__job-count").getText().replace('+','').replace(',',''))
+    except:
+        jobs_num = 25
     jobs_data = scrap_linkedin_jobs_data(soup)
     return jobs_num,jobs_data
 
@@ -71,7 +73,7 @@ def linkedin_scrap(linkedin_link):
     if not os.path.exists("output/linkedin"):
         os.makedirs("output/linkedin")
     jobs_num,job_data = linkedin_jobs_num(linkedin_link['links'])
-    for page in tqdm.tqdm(range(1,jobs_num//25)):
+    for page in range(1,jobs_num//25):
         try:
             soup = BeautifulSoup(scrap_linkedin_api(linkedin_link['links'],page),features="lxml")
             job_data.extend(scrap_linkedin_jobs_data(soup))

@@ -22,8 +22,10 @@ def scrapfly_request(link):
 
 def indeed_jobs_num(link):
     soup = BeautifulSoup(scrapfly_request(link),features="lxml")
-    jobs_num = soup.find(class_="jobsearch-JobCountAndSortPane-jobCount css-1af0d6o eu4oa1w0").find('span').getText().replace('jobs','').strip()
-    jobs_num = int(jobs_num.replace(',', ''))
+    try:
+        jobs_num = int(soup.find(class_="jobsearch-JobCountAndSortPane-jobCount css-1af0d6o eu4oa1w0").find('span').getText().replace('jobs','').replace(',', '').strip())
+    except:
+        jobs_num = 1
     jobs_data = scrap_indeed_jobs_data(soup)
     return jobs_num,jobs_data
 
@@ -50,7 +52,7 @@ def indeed_scrap(indeed_link):
     if not os.path.exists("output/indeed"):
         os.makedirs("output/indeed")
     jobs_num,job_data = indeed_jobs_num(indeed_link['links'])
-    for page in tqdm.tqdm(range(1,jobs_num//15)):
+    for page in range(1,jobs_num//15):
         try:
             soup = BeautifulSoup(scrapfly_request(indeed_link['links']+f'&start={10*page}'),features="lxml")
             job_data.extend(scrap_indeed_jobs_data(soup))
