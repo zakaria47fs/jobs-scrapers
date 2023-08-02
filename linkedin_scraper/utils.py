@@ -34,14 +34,15 @@ def scrap_linkedin_jobs_data(soup):
     jobs_data = []
     for job in jobs:
         try:
-            title = job.find('a').getText().replace('\n','').strip()
-            url = job.find('a')['href']
+            job_title = job.find('a').getText().replace('\n','').strip()
+            job_link = job.find('a')['href']
             location = job.find(class_="job-search-card__location").getText().replace('\n','').strip()
             try:
                 company = job.find(class_="hidden-nested-link").getText().replace('\n','').strip()
             except:
                 company = job.find(class_="base-search-card__subtitle").getText().replace('\n','').strip()
-            job_data = {'title':title,'url':url,'location':location,'company':company}
+            date_posted = job.find('time')['datetime']
+            job_data = {'job title':job_title,'company working':company,'location working':location,'link':job_link,'date_posted':date_posted}
             jobs_data.append(job_data)
         except:
             pass
