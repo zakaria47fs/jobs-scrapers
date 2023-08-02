@@ -42,7 +42,7 @@ def scrap_indeed_jobs_data(soup):
             company = job.find(class_="companyName").getText()
             location = job.find(class_="companyLocation").getText()
             date_posted = job.find(class_="date").getText().replace('Posted','')
-            job_data = {'job_title':job_title,'job_link':job_link,'company':company,'location':location,'date_posted':date_posted}
+            job_data = {'job title':title,'company working':company,'location working':location,'link':url,'date_posted':date_posted}
             jobs_data.append(job_data)
         except:
             pass
