@@ -32,7 +32,7 @@ def google_jobs_scrape(search_query):
             location = job['location']
             date_posted = job['detected_extensions']['posted_at']
             job_link = jobs_link_by_id(job_id)
-            job_data = {'job_title':job_title,'job_link':job_link,'company':company,'location':location,'date_posted':date_posted}
+            job_data = {'job title':title,'company working':company,'location working':location,'link':url,'date_posted':date_posted}
             jobs_data.append(job_data)
         except:
             pass
