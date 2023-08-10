@@ -9,33 +9,37 @@ api_key = os.getenv("API_KEY")
 def google_jobs_scrape(search_query):
     if not os.path.exists("output/google"):
         os.makedirs("output/google")
-    params = {
+    jobs_data = []
+    for page_num in range(100):
+        params = {
         "engine": "google_jobs",
         "q": search_query,
         "hl": "en",
         "location":"united kingdom",
         "google_domain":"google.co.uk",
         "gl":"uk",
+        "start" : 10*page_num,
         "api_key": api_key
-    }
-
-    search = GoogleSearch(params)
-    results = search.get_dict()
-    jobs_results = results["jobs_results"]
+        }
+        search = GoogleSearch(params)
+        results = search.get_dict()
+        if 'error' in results.keys():
+            break
+        jobs_results = results["jobs_results"]
     
-    jobs_data = []
-    for job in jobs_results:
-        try:
-            job_title = job['title']
-            job_id = job['job_id']
-            company = job['company_name']
-            location = job['location']
-            date_posted = job['detected_extensions']['posted_at']
-            job_link = jobs_link_by_id(job_id)
-            job_data = {'job title':job_title,'company working':company,'location working':location,'link':job_link,'date_posted':date_posted}
-            jobs_data.append(job_data)
-        except:
-            pass
+        
+        for job in jobs_results:
+            try:
+                job_title = job['title']
+                job_id = job['job_id']
+                company = job['company_name']
+                location = job['location']
+                date_posted = job['detected_extensions']['posted_at']
+                job_link = jobs_link_by_id(job_id)
+                job_data = {'job title':job_title,'company working':company,'location working':location,'link':job_link,'date_posted':date_posted}
+                jobs_data.append(job_data)
+            except:
+                pass
     
     df = pd.DataFrame(jobs_data)
     df.to_csv(f'output/google/google_output_{search_query}.csv')
