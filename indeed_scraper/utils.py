@@ -31,7 +31,7 @@ def indeed_jobs_num(link):
 
 def scrap_indeed_jobs_data(soup):   
     jobs_data = []
-    jobs = soup.find(class_="jobsearch-ResultsList css-0").find_all('li')
+    jobs = soup.find(id="mosaic-jobResults").find_all('li')
     for job in jobs:
         try:
             job_title = job.find(class_="jobTitle").getText()
