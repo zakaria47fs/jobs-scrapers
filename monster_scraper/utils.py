@@ -44,13 +44,14 @@ def get_apikey_fingerprint(link):
     
     return fingerprint_value,key_value_pair
 
-def get_searchId(fingerprint_value,key_value_pair,offset):
+def get_searchId(fingerprint_value,key_value_pair,offset,location):
     url = f"https://appsapi.monster.io/jobs-svx-service/v2/monster/search-jobs/samsearch/en-GB?apikey={key_value_pair}"
 
     payload = '{\"jobQuery\":{\"query\":\"\",\"locations\":[{\"country\":\"gb\",\"address\":\"Bedfordshire\",\"radius\":{\"unit\":\"mi\",\"value\":5}}],\"activationRecency\":\"today\"},\"jobAdsRequest\":{\"position\":[1,2,3,4,5,6,7,8,9],\"placement\":{\"channel\":\"WEB\",\"location\":\"JobSearchPage\",\"property\":\"monster.co.uk\",\"type\":\"JOB_SEARCH\",\"view\":\"SPLIT\"}},\"fingerprintId\":\"z50446280c2b01c552e1556a3d58d1e28\",\"offset\":9,\"pageSize\":9,\"histogramQueries\":[\"count(company_display_name)\",\"count(employment_type)\"]}'
 
     payload = re.sub(r'"fingerprintId":"[^"]+"', f'"fingerprintId":"{fingerprint_value}"', payload)
     payload = re.sub(r'"offset":\d+', f'"offset":{offset}', payload)
+    payload = re.sub(r'"address":\w+', f'"offset":{location}', payload)
 
 
     headers = {
@@ -62,7 +63,7 @@ def get_searchId(fingerprint_value,key_value_pair,offset):
 
     return json.loads(response.text)['searchId']
 
-def scrap_job_data(fingerprint_value,key_value_pair,offset,searchId):
+def scrap_job_data(fingerprint_value,key_value_pair,offset,searchId,location):
     url = f"https://appsapi.monster.io/jobs-svx-service/v2/monster/search-jobs/samsearch/en-GB?apikey={key_value_pair}"
 
     payload = '{\"jobQuery\":{\"query\":\"\",\"locations\":[{\"country\":\"gb\",\"address\":\"Bedfordshire\",\"radius\":{\"unit\":\"mi\",\"value\":5}}],\"activationRecency\":\"today\"},\"jobAdsRequest\":{\"position\":[1,2,3,4,5,6,7,8,9],\"placement\":{\"channel\":\"WEB\",\"location\":\"JobSearchPage\",\"property\":\"monster.co.uk\",\"type\":\"JOB_SEARCH\",\"view\":\"SPLIT\"}},\"fingerprintId\":\"z50446280c2b01c552e1556a3d58d1e28\",\"offset\":9,\"pageSize\":9,\"histogramQueries\":[\"count(company_display_name)\",\"count(employment_type)\"],\"searchId\":}'
@@ -70,7 +71,7 @@ def scrap_job_data(fingerprint_value,key_value_pair,offset,searchId):
     payload = re.sub(r'"fingerprintId":"[^"]+"', f'"fingerprintId":"{fingerprint_value}"', payload)
     payload = re.sub(r'"offset":\d+', f'"offset":{offset}', payload)
     payload = re.sub(r'"searchId":', f'"searchId":"{searchId}"', payload)
-
+    payload = re.sub(r'"address":"([^"]+)"', f'"address":"{location}"', payload)
     headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
       'content-type': 'application/json; charset=UTF-8'
@@ -90,8 +91,8 @@ def monster_scrap(monster_link):
     offset = 0
     while True :
         fingerprint_value,key_value_pair = get_apikey_fingerprint(monster_link['links'])
-        searchId = get_searchId(fingerprint_value,key_value_pair,0)
-        data = scrap_job_data(fingerprint_value,key_value_pair,offset,searchId)
+        searchId = get_searchId(fingerprint_value,key_value_pair,0,monster_link['locations'])
+        data = scrap_job_data(fingerprint_value,key_value_pair,offset,searchId,monster_link['locations'])
         if 'message' in data.keys():
             break
         if data['totalSize']==0:

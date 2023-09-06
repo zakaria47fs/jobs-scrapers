@@ -9,14 +9,6 @@ load_dotenv()
 
 SCRAPFLY_API_KEY = os.getenv("SCRAPFLY_API_KEY")
 
-import os
-import pandas as pd
-from scrapfly import ScrapflyClient, ScrapeConfig
-from bs4 import BeautifulSoup
-import tqdm
-import re
-
-SCRAPFLY_API_KEY = 'scp-live-a2a9ab68a8114fe2b6bf98094ed60f16'
 
 def scrapfly_request(link):
     
