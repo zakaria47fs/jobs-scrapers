@@ -1,9 +1,9 @@
-from reed_scraper.utils import reed_scrap,merge_data
+from utils.utils_reed import reed_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='reed_scraper/log_reed.log',
+logging.basicConfig(filename='logs/log_reed.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             reed_scrap(reed_link)
             reed_df.loc[reed_df['links'] == reed_link['links'], 'details'] ='success'
-            reed_df.to_csv('output/reed_output_details.csv',index=False)
+            reed_df.to_csv('output/reed/reed_output_details.csv',index=False)
             logging.info(f"{reed_link['links']} :: scrapped successfully.")
         except Exception as e:
             reed_df.loc[reed_df['links'] == reed_link['links'], 'details'] ='failed'
-            reed_df.to_csv('output/reed_output_details.csv',index=False)
+            reed_df.to_csv('output/reed/reed_output_details.csv',index=False)
             logging.info(f"{reed_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

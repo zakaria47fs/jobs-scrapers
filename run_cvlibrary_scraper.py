@@ -1,9 +1,9 @@
-from cvlibrary_scraper.utils import cvlibrary_scrap,merge_data
+from utils.utils_cvlibrary import cvlibrary_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='cvlibrary_scraper/log_cvlibrary.log',
+logging.basicConfig(filename='logs/log_cvlibrary.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             cvlibrary_scrap(cvlibrary_link)
             cvlibrary_df.loc[cvlibrary_df['links'] == cvlibrary_link['links'], 'details'] ='success'
-            cvlibrary_df.to_csv('output/cvlibrary_output_details.csv',index=False)
+            cvlibrary_df.to_csv('output/cvlibrary/cvlibrary_output_details.csv',index=False)
             logging.info(f"{cvlibrary_link['links']} :: scrapped successfully.")
         except Exception as e:
             cvlibrary_df.loc[cvlibrary_df['links'] == cvlibrary_link['links'], 'details'] ='failed'
-            cvlibrary_df.to_csv('output/cvlibrary_output_details.csv',index=False)
+            cvlibrary_df.to_csv('output/cvlibrary/cvlibrary_output_details.csv',index=False)
             logging.info(f"{cvlibrary_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

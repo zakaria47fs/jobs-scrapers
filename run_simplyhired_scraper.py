@@ -1,9 +1,9 @@
-from simplyhired_scraper.utils import simplyhired_scrap,merge_data
+from utils.utils_simplyhired import simplyhired_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='simplyhired_scraper/log_simplyhired.log',
+logging.basicConfig(filename='logs/log_simplyhired.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             simplyhired_scrap(simplyhired_link)
             simplyhired_df.loc[simplyhired_df['links'] == simplyhired_link['links'], 'details'] ='success'
-            simplyhired_df.to_csv('output/simplyhired_output_details.csv',index=False)
+            simplyhired_df.to_csv('output/simplyhired/simplyhired_output_details.csv',index=False)
             logging.info(f"{simplyhired_link['links']} :: scrapped successfully.")
         except Exception as e:
             simplyhired_df.loc[simplyhired_df['links'] == simplyhired_link['links'], 'details']='failed'
-            simplyhired_df.to_csv('output/simplyhired_output_details.csv',index=False)
+            simplyhired_df.to_csv('output/simplyhired/simplyhired_output_details.csv',index=False)
             logging.info(f"{simplyhired_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

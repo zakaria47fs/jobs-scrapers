@@ -1,9 +1,9 @@
-from monster_scraper.utils import monster_scrap,merge_data
+from utils.utils_monster import monster_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='monster_scraper/log_monster.log',
+logging.basicConfig(filename='logs/log_monster.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             monster_scrap(monster_link)
             monster_df.loc[monster_df['links'] == monster_link['links'], 'details'] ='success'
-            monster_df.to_csv('output/monster_output_details.csv',index=False)
+            monster_df.to_csv('output/monster/monster_output_details.csv',index=False)
             logging.info(f"{monster_link['links']} :: scrapped successfully.")
         except Exception as e:
             monster_df.loc[monster_df['links'] == monster_link['links'], 'details'] ='failed'
-            monster_df.to_csv('output/monster_output_details.csv',index=False)
+            monster_df.to_csv('output/monster/monster_output_details.csv',index=False)
             logging.info(f"{monster_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

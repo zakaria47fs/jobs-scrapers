@@ -1,9 +1,9 @@
-from linkedin_scraper.utils import linkedin_scrap,merge_data
+from utils.utils_linkedin import linkedin_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='linkedin_scraper/log_linkedin.log',
+logging.basicConfig(filename='logs/log_linkedin.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             linkedin_scrap(linkedin_link)
             linkedin_df.loc[linkedin_df['links'] == linkedin_link['links'], 'details'] ='success'
-            linkedin_df.to_csv('output/linkedin_output_details.csv',index=False)
+            linkedin_df.to_csv('output/linkedin/linkedin_output_details.csv',index=False)
             logging.info(f"{linkedin_link['links']} :: scrapped successfully.")
         except Exception as e:
             linkedin_df.loc[linkedin_df['links'] == linkedin_link['links'], 'details'] ='failed'
-            linkedin_df.to_csv('output/linkedin_output_details.csv',index=False)
+            linkedin_df.to_csv('output/linkedin/linkedin_output_details.csv',index=False)
             logging.info(f"{linkedin_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

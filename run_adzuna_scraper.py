@@ -1,9 +1,9 @@
-from adzuna_scraper.utils import adzuna_scrap,merge_data
+from utils.utils_adzuna import adzuna_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='adzuna_scraper/log_adzuna.log',
+logging.basicConfig(filename='logs/log_adzuna.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             adzuna_scrap(adzuna_link)
             adzuna_df.loc[adzuna_df['links'] == adzuna_link['links'], 'details'] ='success'
-            adzuna_df.to_csv('output/adzuna_output_details.csv',index=False)
+            adzuna_df.to_csv('output/adzuna/adzuna_output_details.csv',index=False)
             logging.info(f"{adzuna_link['links']} :: scrapped successfully.")
         except Exception as e:
             adzuna_df.loc[adzuna_df['links'] == adzuna_link['links'], 'details'] ='failed'
-            adzuna_df.to_csv('output/adzuna_output_details.csv',index=False)
+            adzuna_df.to_csv('output/adzuna/adzuna_output_details.csv',index=False)
             logging.info(f"{adzuna_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

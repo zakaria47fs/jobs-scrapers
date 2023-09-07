@@ -1,37 +1,34 @@
-Using the Job Scraper:
+## Introduction
 
-Follow these steps to effectively use the job scraper:
+This README provides instructions for using the web scraper tool to efficiently obtain data from various sources. Follow the steps below to make the most of the available scrapers.
 
-Google Scraper:
-To execute the Google scraper, simply double-click on the "run_google_scraper.py" file.
+## Usage
 
-LinkedIn Scraper:
-Activate the LinkedIn scraper by double-clicking on the "run_linkedin_scraper.py" file.
+### Running the Scraper
 
-Indeed Scraper:
-To initiate the Indeed scraper, double-click on the "run_indeed_scraper.py" file.
+To use the web scraper, follow these steps:
 
-Data from each scraper will be conveniently stored in their respective folders:
+1. Navigate to the root directory of the scraper.
+2. Locate the appropriate scraper script (e.g., `run_google_scraper.py`) for your desired source.
+3. Double-click on the scraper script to run it.
 
-Google data: \output\google folder
-LinkedIn data: \output\linkedin folder
-Indeed data: \output\indeed folder
+### Data Storage
 
-If you want to see the details of the scrapers, you can go to the output folder and find the following CSV files:
+Data from each source will be conveniently stored in their respective folders:
 
-Google Scraper Details: \output\google\google_output_details.csv
-LinkedIn Scraper Details: \output\linkedin\linkedin_output_details.csv
-Indeed Scraper Details: \output\indeed\indeed_output_details.csv
+- Full scrapped data: (e.g, `\output\google\full_data`) folder
+- Scrapped data by location : (e.g, `\output\google\data_by_location`) folder
 
-Should you wish to modify the input parameters for any scraper, follow these guidelines:
+For detailed scraper output, find the following CSV files in the output folder:
 
-For the Google scraper, make adjustments in the "input.xlsx" file within the "google" sheet.
-For the LinkedIn scraper, update the "input.xlsx" file within the "linkedin" sheet.
-For the Indeed scraper, modify the "input.xlsx" file within the "indeed" sheet.
-
-By following these instructions, you can efficiently utilize the job scraper and obtain the desired data for your specific needs.
+-  (e.g, `\output\google\google_output_details.csv`)
 
 
+## Customizing Input Parameters
 
+To modify the input parameters for any scraper, follow these guidelines:
 
+- Open the "input.xlsx" file within the corresponding sheet for your source.
+- Adjust the input parameters as needed.
 
+By following these instructions, you can efficiently utilize the web scraper and obtain the desired data for your specific needs.

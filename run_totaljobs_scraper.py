@@ -1,9 +1,9 @@
-from totaljobs_scraper.utils import totaljobs_scrap,merge_data
+from utils.utils_totaljob import totaljobs_scrap,merge_data
 import pandas as pd
 import tqdm
 import logging
 
-logging.basicConfig(filename='totaljobs_scraper/log_totaljobs.log',
+logging.basicConfig(filename='logs/log_totaljobs.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             totaljobs_scrap(totaljobs_link)
             totaljobs_df.loc[totaljobs_df['links'] == totaljobs_link['links'], 'details'] = 'success'
-            totaljobs_df.to_csv('output/totaljobs_output_details.csv',index=False)
+            totaljobs_df.to_csv('output/totaljobs/totaljobs_output_details.csv',index=False)
             logging.info(f"{totaljobs_link['links']} :: scrapped successfully.")
         except Exception as e:
             totaljobs_df.loc[totaljobs_df['links'] == totaljobs_link['links'], 'details'] ='failed'
-            totaljobs_df.to_csv('output/totaljobs_output_details.csv',index=False)
+            totaljobs_df.to_csv('output/totaljobs/totaljobs_output_details.csv',index=False)
             logging.info(f"{totaljobs_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')

@@ -1,9 +1,9 @@
-from glassdoor_scraper.utils import glassdoor_scrap,merge_data
+from utils.utils_glassdoor import glassdoor_scrap,merge_data
 import pandas as pd
 from tqdm import tqdm
 import logging
 
-logging.basicConfig(filename='glassdoor_scraper/log_glassdoor.log',
+logging.basicConfig(filename='logs/log_glassdoor.log',
                     format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -23,11 +23,11 @@ if __name__=='__main__':
         try:
             glassdoor_scrap(glassdoor_link)
             glassdoor_df.loc[glassdoor_df['links'] == glassdoor_link['links'], 'details'] ='success'
-            glassdoor_df.to_csv('output/glassdoor_output_details.csv',index=False)
+            glassdoor_df.to_csv('output/glassdoor/glassdoor_output_details.csv',index=False)
             logging.info(f"{glassdoor_link['links']} :: scrapped successfully.")
         except Exception as e:
             glassdoor_df.loc[glassdoor_df['links'] == glassdoor_link['links'], 'details'] ='failed'
-            glassdoor_df.to_csv('output/glassdoor_output_details.csv',index=False)
+            glassdoor_df.to_csv('output/glassdoor/glassdoor_output_details.csv',index=False)
             logging.info(f"{glassdoor_link['links']} :: scrape failed.")
             logging.info(f"details :: {str(e)}")
             print('scraper failed')
