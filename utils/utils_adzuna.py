@@ -24,7 +24,7 @@ def scrapfly_request(link):
 def get_pages_nums(link):
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    pages_num = int(soup.find(class_="p-3 text-sm text-center").text.split('of')[1].replace(',',''))
+    pages_num = int(soup.find(class_="p-3 text-sm text-center").text.split('of')[1].replace(',',''))//10
     return pages_num
 
 def get_job_data(link):
@@ -51,7 +51,7 @@ def adzuna_scrap(adzuna_link):
     pages_num = get_pages_nums(adzuna_link['links'])
     job_data = []
     for page_num in tqdm.tqdm(range(1,pages_num+1)):
-        url = adzuna_link['links'] + f'&pageno={page_num}'
+        url = adzuna_link['links'] + f'&p={page_num}'
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
