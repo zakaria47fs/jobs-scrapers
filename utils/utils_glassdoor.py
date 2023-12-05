@@ -4,6 +4,7 @@ from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
 import re
+from datetime import date
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -24,31 +25,35 @@ def scrapfly_request(link):
 def get_pages_nums(link):
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    pages_num = int(soup.find(class_="paginationFooter").text.split('of')[1].replace(',',''))
+    pages_regex_pattern = re.compile(r'SearchResultsHeader_jobCount\w+')
+
+    pages_num = int(soup.find(class_=pages_regex_pattern).text.split()[0].replace(',',''))//30
     return pages_num
 
 def get_job_data(link):
     jobs_data = []
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    jobs = soup.find(id="MainCol").find_all('li')
+    jobs = soup.find_all('li',{'data-test':"jobListing"})
     for job in jobs:
-        try:
-            job_link = 'https://www.glassdoor.co.uk' + job.find('a')['href']
+        # try:
+            if job.find('a')['href'].startswith('https://www.glassdoor.co.uk'):
+                job_link = job.find('a')['href']
+            else:
+                job_link = 'https://www.glassdoor.co.uk' + job.find('a')['href']
             
-            title_regex_pattern = re.compile(r'job-title \w+')
-            title = job.find(class_=title_regex_pattern).text.strip()
+            title_regex_pattern = re.compile(r'JobCard_seoLink__\w+')
+            title = job.find('a',class_=title_regex_pattern).text.strip()
             
-            company_regex_pattern = re.compile(r'job-search-\w+')
-            company = job.find('div',class_=company_regex_pattern).find('div',class_=company_regex_pattern).find('div',class_=company_regex_pattern).text
+            company_regex_pattern = re.compile(r'EmployerProfile_profileContainer__\w+')
+            company = job.find('div',class_=company_regex_pattern).text
             
-            location_regex_pattern = re.compile(r'location \w+')
-            location = job.find(class_=location_regex_pattern).text.strip()
+            location = job.find('div',{'data-test':"emp-location"}).text.strip()
             
             date = job.find('div',{'data-test':"job-age"}).text
             jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
-        except:
-            pass
+        # except:
+        #     pass
     return jobs_data
 
 def glassdoor_scrap(glassdoor_link):
@@ -58,17 +63,17 @@ def glassdoor_scrap(glassdoor_link):
         os.makedirs("output/glassdoor/full_data")
     pages_num = get_pages_nums(glassdoor_link['links'])
     job_data = []
-    for page_num in tqdm.tqdm(range(1,pages_num+1)):
+    for page_num in tqdm.tqdm(range(1,pages_num+1)[:10]):
         url = glassdoor_link['links'].split('.htm')[0] + f'_IP{page_num}'+'.htm'+glassdoor_link['links'].split('.htm')[1]
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/glassdoor/data_by_location/glassdoor_output_{glassdoor_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/glassdoor/data_by_location/glassdoor_output_{glassdoor_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/glassdoor/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\glassdoor\\full_data'
 
@@ -83,7 +88,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'glassdoor_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'glassdoor_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

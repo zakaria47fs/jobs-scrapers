@@ -4,6 +4,7 @@ from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
 import re
+from datetime import date
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -58,12 +59,12 @@ def cvlibrary_scrap(cvlibrary_link):
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/cvlibrary/data_by_location/cvlibrary_output_{cvlibrary_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/cvlibrary/data_by_location/cvlibrary_output_{cvlibrary_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/cvlibrary/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\cvlibrary\\full_data'
 
@@ -78,7 +79,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'cvlibrary_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'cvlibrary_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

@@ -1,6 +1,8 @@
 from serpapi import GoogleSearch
 import os
 import pandas as pd
+from datetime import date
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -46,7 +48,7 @@ def google_jobs_scrape(search_query):
                 pass
     
     df = pd.DataFrame(jobs_data)
-    df.to_csv(f'output/google/data_by_search_query/google_output_{search_query}.csv',index=False)
+    df.to_csv(f'output/google/data_by_search_query/google_output_{search_query}_{date.today()}.csv',index=False)
 
 def jobs_link_by_id(job_id):
     params = {
@@ -64,7 +66,7 @@ def jobs_link_by_id(job_id):
 def merge_data():
     folder_path = 'output/google/data_by_search_query'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\google\\full_data'
 
@@ -79,7 +81,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'google_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'google_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

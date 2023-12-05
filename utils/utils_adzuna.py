@@ -4,6 +4,7 @@ from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
 import re
+from datetime import date
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -24,7 +25,7 @@ def scrapfly_request(link):
 def get_pages_nums(link):
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    pages_num = int(soup.find(class_="p-3 text-sm text-center").text.split('of')[1].replace(',',''))
+    pages_num = int(soup.find(class_="p-3 text-sm text-center").text.split('of')[1].replace(',',''))//10
     return pages_num
 
 def get_job_data(link):
@@ -51,16 +52,16 @@ def adzuna_scrap(adzuna_link):
     pages_num = get_pages_nums(adzuna_link['links'])
     job_data = []
     for page_num in tqdm.tqdm(range(1,pages_num+1)):
-        url = adzuna_link['links'] + f'&pageno={page_num}'
+        url = adzuna_link['links'] + f'&p={page_num}'
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/adzuna/data_by_location/adzuna_output_{adzuna_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/adzuna/data_by_location/adzuna_output_{adzuna_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/adzuna/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\adzuna\\full_data'
 
@@ -75,7 +76,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'adzuna_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'adzuna_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

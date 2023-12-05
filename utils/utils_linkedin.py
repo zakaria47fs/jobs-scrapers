@@ -2,9 +2,11 @@ import os
 import pandas as pd
 from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
-import tqdm
-
+from datetime import date, datetime
+from tqdm import tqdm
 from dotenv import load_dotenv
+from datetime import date
+
 load_dotenv()
 
 SCRAPFLY_API_KEY = os.getenv("SCRAPFLY_API_KEY")
@@ -42,6 +44,9 @@ def scrap_linkedin_jobs_data(soup):
             except:
                 company = job.find(class_="base-search-card__subtitle").getText().replace('\n','').strip()
             date_posted = job.find('time')['datetime']
+            days = (datetime.strptime(date_posted, "%Y-%m-%d").date()-date.today()).days
+            if days<-2:
+                continue
             job_data = {'date':date_posted,'job title':job_title,'company working':company,'location working':location,'link':job_link}
             jobs_data.append(job_data)
         except:
@@ -77,19 +82,20 @@ def linkedin_scrap(linkedin_link):
     if not os.path.exists("output/linkedin/full_data"):
         os.makedirs("output/linkedin/full_data")
     jobs_num,job_data = linkedin_jobs_num(linkedin_link['links'])
-    for page in range(1,jobs_num//25):
+    for page in tqdm(range(1,jobs_num//25)):
         try:
             soup = BeautifulSoup(scrap_linkedin_api(linkedin_link['links'],page),features="lxml")
             job_data.extend(scrap_linkedin_jobs_data(soup))
         except:
-            break
+            if page==20:
+                break
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/linkedin/data_by_location/linkedin_output_{linkedin_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/linkedin/data_by_location/linkedin_output_{linkedin_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/linkedin/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\linkedin\\full_data'
 
@@ -104,7 +110,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'linkedin_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'linkedin_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

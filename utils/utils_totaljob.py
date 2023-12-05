@@ -3,6 +3,7 @@ import pandas as pd
 from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
+from datetime import date
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -17,9 +18,7 @@ def scrapfly_request(link):
         url = link,
         asp = True,
         country  = "gb",
-        render_js = True,
-        rendering_wait=5000,
-        wait_for_selector='/html/body/div[4]/div[1]/div/div/div/div/div[2]/div[3]/nav'
+        render_js = True
     ))
     
     return result.content
@@ -29,7 +28,7 @@ def scrapfly_request(link):
 def get_pages_nums(link):
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    pages_num = int(soup.find('nav',{'aria-label':"pagination"}).text.split('Chevron')[0].split('of')[1].replace(',',''))
+    pages_num = int(soup.find('span',{'data-at':"search-jobs-count"}).text.split(' Advanced Practitioner jobs')[0].replace(',',''))//25
 
     return pages_num
 
@@ -63,12 +62,12 @@ def totaljobs_scrap(totaljobs_link):
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/totaljobs/data_by_location/totaljobs_output_{totaljobs_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/totaljobs/data_by_location/totaljobs_output_{totaljobs_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/totaljobs/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'{date.today()}.csv')]
 
     new_folder_path = 'output\\totaljobs\\full_data'
 
@@ -83,7 +82,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'totaljobs_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'totaljobs_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

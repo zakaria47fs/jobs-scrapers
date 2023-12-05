@@ -2,7 +2,8 @@ import os
 import pandas as pd
 from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
-import tqdm
+from tqdm import tqdm
+from datetime import date
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -39,8 +40,8 @@ def scrap_indeed_jobs_data(soup):
                 job_link = 'https://uk.indeed.com/viewjob?'+job.find(class_="jobTitle").find('a')['href'].split('clk?')[1]
             except:
                 job_link = 'https://uk.indeed.com'+job.find(class_="jobTitle").find('a')['href']
-            company = job.find(class_="companyName").getText()
-            location = job.find(class_="companyLocation").getText()
+            company = job.find('span',{'data-testid':"company-name"}).getText()
+            location = job.find('div',{'data-testid':"text-location"}).getText()
             date_posted = job.find(class_="date").getText().replace('Posted','')
             job_data = {'date':date_posted, 'job title':job_title,'company working':company,'location working':location,'link':job_link}
             jobs_data.append(job_data)
@@ -54,7 +55,7 @@ def indeed_scrap(indeed_link):
     if not os.path.exists("output/indeed/full_data"):
         os.makedirs("output/indeed/full_data")
     jobs_num,job_data = indeed_jobs_num(indeed_link['links'])
-    for page in range(1,jobs_num//15):
+    for page in tqdm(range(1,jobs_num//15)):
         try:
             soup = BeautifulSoup(scrapfly_request(indeed_link['links']+f'&start={10*page}'),features="lxml")
             job_data.extend(scrap_indeed_jobs_data(soup))
@@ -62,12 +63,12 @@ def indeed_scrap(indeed_link):
            break
     
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/indeed/data_by_location/indeed_output_{indeed_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/indeed/data_by_location/indeed_output_{indeed_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/indeed/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'_{date.today()}.csv')]
 
     new_folder_path = 'output\\indeed\\full_data'
 
@@ -82,7 +83,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'indeed_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'indeed_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass

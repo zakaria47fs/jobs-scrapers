@@ -4,6 +4,7 @@ from scrapfly import ScrapflyClient, ScrapeConfig
 from bs4 import BeautifulSoup
 import tqdm
 import re
+from datetime import date 
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -24,21 +25,24 @@ def scrapfly_request(link):
 def get_pages_nums(link):
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    pages_num = int(soup.find(class_="pagination Pagination Pagination--withTotalJobCounts").find_all('li')[-2].text.replace(',',''))
+    pages_num = int(soup.find('nav',{'aria-label':"pagination"}).find_all('a')[-2].text.replace(',',''))
     return pages_num
 
 def get_job_data(link):
     jobs_data = []
     content = scrapfly_request(link)
     soup = BeautifulSoup(content,features="lxml")
-    jobs = soup.find_all('article')
+    jobs = soup.find(id="job-list").find_all('li')
     for job in jobs:
         try:
-            job_link = 'https://www.simplyhired.co.uk'+job.find(class_="jobposting-title").find('a')['href']
-            title =  job.find(class_="jobposting-title").text
-            company = job.find(class_="jobposting-subtitle").text.split('-')[0]
-            date = job.find(class_="SerpJob-timestamp").find('time')['datetime']
-            location = job.find(class_="jobposting-subtitle").text.split('-')[1]
+            job_link = 'https://www.simplyhired.co.uk'+job.find('a')['href']
+            title =  job.find("h2").text
+            company = job.find('span',{"data-testid":"companyName"}).text
+            try:
+                date = job.find('p',{'data-testid':"searchSerpJobDateStamp"}).text
+            except:
+                date = ''
+            location = job.find('span',{'data-testid':"searchSerpJobLocation"}).text
             jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
         except:
             print('passed')
@@ -56,12 +60,12 @@ def simplyhired_scrap(simplyhired_link):
         job_data.extend(get_job_data(url))
 
     df = pd.DataFrame(job_data)
-    df.to_csv(f'output/simplyhired/data_by_location/simplyhired_output_{simplyhired_link["locations"]}.csv',index=False)
+    df.to_csv(f'output/simplyhired/data_by_location/simplyhired_output_{simplyhired_link["locations"]}_{date.today()}.csv',index=False)
 
 def merge_data():
     folder_path = 'output/simplyhired/data_by_location'
 
-    csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(f'{date.today()}.csv')]
 
     new_folder_path = 'output\\simplyhired\\full_data'
 
@@ -76,7 +80,7 @@ def merge_data():
             dataframes.append(df)
 
             merged_data = pd.concat(dataframes, ignore_index=True)
-            merged_file_path = os.path.join(new_folder_path, 'simplyhired_full_data.csv')
+            merged_file_path = os.path.join(new_folder_path, f'simplyhired_full_data_{date.today()}.csv')
             merged_data.to_csv(merged_file_path, index=False)
         except:
             pass
