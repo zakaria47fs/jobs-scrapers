@@ -16,7 +16,6 @@ def scrapfly_request(link):
     scrapfly = ScrapflyClient(key=SCRAPFLY_API_KEY)
     result = scrapfly.scrape(ScrapeConfig(
         url = link,
-        asp = True,
         country  = "gb",
     ))
     
@@ -41,8 +40,8 @@ def get_job_data(link):
             title = job.find(class_="job__title").text.replace('\n','').strip()
             company = job.find(class_="job__company-link").text
             location = job.find(class_="job__details-location").text.replace('\n','').strip()
-            date = job.find(class_="job__posted-by").find('span').text
-            jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
+            job_date = job.find(class_="job__posted-by").find('span').text
+            jobs_data.append({'date':job_date,'job title':title,'company working':company,'location working':location,'link':job_link})
         except:
             pass
     return jobs_data

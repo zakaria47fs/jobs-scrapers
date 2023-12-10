@@ -16,7 +16,6 @@ def scrapfly_request(link):
     scrapfly = ScrapflyClient(key=SCRAPFLY_API_KEY)
     result = scrapfly.scrape(ScrapeConfig(
         url = link,
-        asp = True,
         country  = "gb",
     ))
     

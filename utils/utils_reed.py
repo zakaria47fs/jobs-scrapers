@@ -16,7 +16,6 @@ def scrapfly_request(link):
     scrapfly = ScrapflyClient(key=SCRAPFLY_API_KEY)
     result = scrapfly.scrape(ScrapeConfig(
         url = link,
-        asp = True,
         country  = "gb",
     ))
     
@@ -34,13 +33,13 @@ def get_job_data(link):
         job_link = 'https://www.reed.co.uk'+ job.find('a')['href']
 
         date_company_regex_pattern = re.compile(r'job-card_jobResultHeading__postedBy\w+')
-        date = job.find('div', class_=date_company_regex_pattern).text.split('by')[0].strip()
+        job_date = job.find('div', class_=date_company_regex_pattern).text.split('by')[0].strip()
         company = job.find('div', class_=date_company_regex_pattern).text.split('by')[1].replace('\t','').strip()
 
         location_regex_pattern = re.compile(r'job-card_jobMetadata\w+')
         location = job.find('ul', class_=location_regex_pattern).find_all('li')[1].text.strip()
         
-        jobs_data.append({'date':date, 'job title':title,'company working':company,'location working':location,'link':job_link})
+        jobs_data.append({'date':job_date, 'job title':title,'company working':company,'location working':location,'link':job_link})
     return jobs_data
 
 def get_pages_nums(link):

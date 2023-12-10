@@ -10,15 +10,19 @@ load_dotenv()
 
 SCRAPFLY_API_KEY = os.getenv("SCRAPFLY_API_KEY")
 
+import logging
+
+logging.basicConfig(filename='logs/log_totaljobs.log',
+                    format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p',
+                    level=logging.INFO)
 
 def scrapfly_request(link):
     
     scrapfly = ScrapflyClient(key=SCRAPFLY_API_KEY)
     result = scrapfly.scrape(ScrapeConfig(
         url = link,
-        asp = True,
         country  = "gb",
-        render_js = True
     ))
     
     return result.content
@@ -57,9 +61,12 @@ def totaljobs_scrap(totaljobs_link):
     pages_num = get_pages_nums(totaljobs_link['links'])
     job_data = []
     for page_num in tqdm.tqdm(range(1,pages_num+1)):
-        url = totaljobs_link['links'] + f'&page={page_num}'
+        try:
+            url = totaljobs_link['links'] + f'&page={page_num}'
 
-        job_data.extend(get_job_data(url))
+            job_data.extend(get_job_data(url))
+        except Exception as e:
+            logging.info(f"details :: {str(e)}")
 
     df = pd.DataFrame(job_data)
     df.to_csv(f'output/totaljobs/data_by_location/totaljobs_output_{totaljobs_link["locations"]}_{date.today()}.csv',index=False)
