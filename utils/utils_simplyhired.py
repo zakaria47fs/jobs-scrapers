@@ -39,11 +39,12 @@ def get_job_data(link):
             title =  job.find("h2").text
             company = job.find('span',{"data-testid":"companyName"}).text
             try:
-                date = job.find('p',{'data-testid':"searchSerpJobDateStamp"}).text
+                posted = job.find('p',{'data-testid':"searchSerpJobDateStamp"}).text
             except:
-                date = ''
+                posted = ''
+            salary = job.find('p',{"data-testid":"searchSerpJobSalaryEst"}).text.replace('Estimated: ','')
             location = job.find('span',{'data-testid':"searchSerpJobLocation"}).text
-            jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
+            jobs_data.append({'posted':posted,'job title':title,'company working':company,'location working':location,'salary':salary,'link':job_link})
         except:
             print('passed')
     return jobs_data

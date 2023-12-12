@@ -49,8 +49,12 @@ def get_job_data(link):
             
             location = job.find('div',{'data-test':"emp-location"}).text.strip()
             
-            date = job.find('div',{'data-test':"job-age"}).text
-            jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
+            posted = job.find('div',{'data-test':"job-age"}).text
+            try:
+                salary = job.find('div',{'data-test':"detailSalary"}).find_next(text=True).strip()
+            except:
+                pass
+            jobs_data.append({'posted':posted,'job title':title,'company working':company,'location working':location,'salary':salary,'link':job_link})
         # except:
         #     pass
     return jobs_data

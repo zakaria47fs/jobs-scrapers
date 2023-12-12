@@ -46,9 +46,10 @@ def get_job_data(link):
             job_link = 'https://www.totaljobs.com'+job.find('h2').find('a')['href']
             title =  job.find('h2').text.strip()
             company = job.find('span',{'data-at':"job-item-company-name"}).text
-            date = job.find('span',{'data-at':"job-item-timeago"}).find('time')['datetime']
+            posted = job.find('span',{'data-at':"job-item-timeago"}).find('time')['datetime']
             location = job.find('span',{'data-at':"job-item-location"}).text
-            jobs_data.append({'date':date,'job title':title,'company working':company,'location working':location,'link':job_link})
+            salary = job.find('span',{"data-at":"job-item-salary-info"}).text
+            jobs_data.append({'posted':posted,'job title':title,'company working':company,'location working':location,'salary':salary,'link':job_link})
         except:
             pass
     return jobs_data

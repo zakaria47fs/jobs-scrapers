@@ -42,8 +42,9 @@ def scrap_indeed_jobs_data(soup):
                 job_link = 'https://uk.indeed.com'+job.find(class_="jobTitle").find('a')['href']
             company = job.find('span',{'data-testid':"company-name"}).getText()
             location = job.find('div',{'data-testid':"text-location"}).getText()
-            date_posted = job.find(class_="date").getText().replace('Posted','')
-            job_data = {'date':date_posted, 'job title':job_title,'company working':company,'location working':location,'link':job_link}
+            posted = job.find(class_="date").getText().replace('Posted','')
+            salary = job.find(class_="salary-snippet-container").text
+            job_data = {'posted':posted, 'job title':job_title,'company working':company,'location working':location,'salary':salary,'link':job_link}
             jobs_data.append(job_data)
         except:
             pass

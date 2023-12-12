@@ -42,11 +42,11 @@ def scrap_linkedin_jobs_data(soup):
                 company = job.find(class_="hidden-nested-link").getText().replace('\n','').strip()
             except:
                 company = job.find(class_="base-search-card__subtitle").getText().replace('\n','').strip()
-            date_posted = job.find('time')['datetime']
-            days = (datetime.strptime(date_posted, "%Y-%m-%d").date()-date.today()).days
+            posted = job.find('time')['datetime']
+            days = (datetime.strptime(posted, "%Y-%m-%d").date()-date.today()).days
             if days<-2:
                 continue
-            job_data = {'date':date_posted,'job title':job_title,'company working':company,'location working':location,'link':job_link}
+            job_data = {'posted':posted,'job title':job_title,'company working':company,'location working':location,'link':job_link}
             jobs_data.append(job_data)
         except:
             pass

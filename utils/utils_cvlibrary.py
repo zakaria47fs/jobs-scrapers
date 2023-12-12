@@ -40,8 +40,9 @@ def get_job_data(link):
             title = job.find(class_="job__title").text.replace('\n','').strip()
             company = job.find(class_="job__company-link").text
             location = job.find(class_="job__details-location").text.replace('\n','').strip()
-            job_date = job.find(class_="job__posted-by").find('span').text
-            jobs_data.append({'date':job_date,'job title':title,'company working':company,'location working':location,'link':job_link})
+            posted = job.find(class_="job__posted-by").find('span').text
+            salary = job.find(class_="job__details-value salary").text
+            jobs_data.append({'posted':posted,'job title':title,'company working':company,'location working':location,'salary':salary,'link':job_link})
         except:
             pass
     return jobs_data

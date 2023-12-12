@@ -38,7 +38,8 @@ def get_job_data(link):
             title =  job.find('h2').text.replace('\n','').strip()
             company = job.find(class_="ui-company").text
             location = job.find(class_="ui-location text-adzuna-gray-900").text
-            jobs_data.append({'job title':title,'company working':company,'location working':location,'link':job_link})
+            salary = job.find(class_="ui-salary").find_next(text=True).strip()
+            jobs_data.append({'job title':title,'company working':company,'location working':location,'salary':salary,'link':job_link})
         except:
             pass
     return jobs_data

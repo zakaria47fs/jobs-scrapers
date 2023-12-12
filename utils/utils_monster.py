@@ -103,11 +103,11 @@ def monster_scrap(monster_link):
         for job in jobs['jobResults']:
             try:
                 title = job['jobPosting']['title']
-                article_date = job['jobPosting']['datePosted']
+                posted = job['jobPosting']['datePosted']
                 location = job['jobPosting']['jobLocation'][0]['address']['addressLocality']+','+job['jobPosting']['jobLocation'][0]['address']['addressRegion']
                 company = job['jobPosting']['hiringOrganization']['name']
                 url = job['jobPosting']['url']
-                job_data.append({'date':article_date,'job title':title,'company working':company,'location working':location,'link':url})  
+                job_data.append({'posted':posted,'job title':title,'company working':company,'location working':location,'link':url})  
             except:
                 pass
             df = pd.DataFrame(job_data)
